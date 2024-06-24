@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Task Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Task Management</h1>
+    </header>
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="message {{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        {% if current_user.is_authenticated %}
+            <h2>Hello, {{ current_user.username }}!</h2>
+            <a href="{{ url_for('logout') }}">Logout</a>
+            <a href="{{ url_for('task') }}">Add Task</a>
+            <ul>
+                {% for task in tasks %}
+                    <li class="{{ 'completed' if task.completed else '' }}">
+                        {{ task.description }}
+                        <div>
+                            {% if not task.completed %}
+                                <a href="{{ url_for('complete_task', task_id=task.id) }}">Complete</a>
+                            {% endif %}
+                            <a href="{{ url_for('delete_task', task_id=task.id) }}">Delete</a>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <a href="{{ url_for('login') }}">Login</a>
+            <a href="{{ url_for('register') }}">Register</a>
+        {% endif %}
+    </div>
+</body>
+</html>
