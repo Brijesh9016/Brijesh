@@ -1,6 +1,10 @@
 import nltk
 from nltk.chat.util import Chat, reflections
 from datetime import datetime
+import re
+
+# Uncomment and run this line at least once to download NLTK resources
+# nltk.download('punkt')
 
 # Define pairs of patterns and responses
 pairs = [
@@ -64,10 +68,7 @@ pairs = [
         r"how (.*) health(.*)",
         ["I don't have health issues, but I'm here to help you with yours!"]
     ],
-    [
-        r"(.*)(sports|game)?",
-        ["I'm a big fan of football!", "I enjoy watching basketball."]
-    ],
+    
     [
         r"who (.*) (moviestar|actor)?",
         ["I really like Brad Pitt.", "I'm a fan of Emma Watson."]
@@ -82,9 +83,56 @@ pairs = [
     ],
     [
         r"what is (.*) (capital|capital city) of (.*)?",
-        ["The capital of %2 is %1."]
+        ["The capital of %3 is %1."]
     ],
-    
+    [
+        r"how can i get information about any college?",
+        ["For information about colleges, you can visit their official websites or contact their admissions offices directly."]
+    ],
+    [
+        r"admission process",
+        ["The admission process varies by college. It usually involves submitting an application, transcripts, test scores, and possibly an interview."]
+    ],
+    [
+        r"which courses?|courses offered",
+        ["Colleges offer a wide range of courses including arts, sciences, engineering, medicine, law, and many others. It depends on the college and its academic programs."]
+    ],
+    [
+        r"which college is best for engineering?",
+        ["Indian institute of technology(IIT), IISC(Indian Institute of science),some other college like NIT,IIIT and you can prefered to your state government collge. "]
+    ],
+    [
+        r"where is your college located?",
+        ["XYZ University is located in City, State."]
+    ],
+    [
+        r"is this college public or private?",
+        ["mostly iit is government or other new iit are private"]
+    ],
+    [
+        r"what are the admission requirements for (.*)?",
+        ["Admission requirements for %1 vary. Typically, they include transcripts, test scores, letters of recommendation, and an application fee."]
+    ],
+    [
+        r"how do i apply to in this college?",
+        ["josaa counselling"]
+    ],
+    [
+        r"when is the application deadline?",
+        ["The application deadline for XYZ University varies by program. It's best to check our website for specific deadlines."]
+    ],
+    [
+        r"what undergraduate programs do you offer?",
+        ["We offer a wide range of undergraduate programs including arts, sciences, business, engineering, and more."]
+    ],
+    [
+        r"can you tell me about the (.*) program at your college?",
+        ["The %1 program at XYZ University focuses on [brief description of program]. It prepares students for careers in [field]."]
+    ],
+    [
+        r"are there any specialized courses or majors available?",
+        ["Yes, we have specialized courses and majors in fields like data sicence, machine learning, and Artificial intelligence."]
+    ],
     [
         r"quit",
         ["Goodbye for now. See you soon!", "It was nice chatting with you. Bye!"]
@@ -124,13 +172,34 @@ def time_of_day():
     else:
         return "evening"
 
+# Function to remove punctuation marks from a string
+def remove_punctuation(text):
+    return re.sub(r'[^\w\s]', '', text)
+
+# Function to split a string into individual sentences
+def split_sentences(text):
+    return nltk.sent_tokenize(text)
+
 # Function to start the chatbot
 def chatbot():
     print(f"Good {time_of_day()}! I am a chatbot created with NLTK. How can I help you today? (type 'quit' to exit)")
 
     # Create a Chat object with defined pairs and reflections
     chat = Chat(pairs, reflections)
-    chat.converse()
+
+    # Process user input
+    while True:
+        user_input = input("> ")
+        user_input = remove_punctuation(user_input)
+
+        # Process each sentence separately
+        sentences = split_sentences(user_input)
+        for sentence in sentences:
+            if sentence.strip() == "quit":
+                print("Goodbye for now. See you soon!")
+                return
+            response = chat.respond(sentence)
+            print(response)
 
 # Main function to start the chatbot when script is run
 if __name__ == "__main__":
